@@ -1,0 +1,4 @@
+C:/Programming/deltarune-connected-c/build/CMakeFiles/deltarune_connected.dir
+C:/Programming/deltarune-connected-c/build/CMakeFiles/deltabuilder.dir
+C:/Programming/deltarune-connected-c/build/CMakeFiles/edit_cache.dir
+C:/Programming/deltarune-connected-c/build/CMakeFiles/rebuild_cache.dir

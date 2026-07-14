@@ -1,0 +1,20 @@
+[
+{
+  "directory": "C:/Programming/deltarune-connected-c/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -g -o CMakeFiles\\deltarune_connected.dir\\main.c.obj -c C:\\Programming\\deltarune-connected-c\\main.c",
+  "file": "C:/Programming/deltarune-connected-c/main.c",
+  "output": "C:/Programming/deltarune-connected-c/build/CMakeFiles/deltarune_connected.dir/main.c.obj"
+},
+{
+  "directory": "C:/Programming/deltarune-connected-c/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -g -o CMakeFiles\\deltabuilder.dir\\builder.c.obj -c C:\\Programming\\deltarune-connected-c\\builder.c",
+  "file": "C:/Programming/deltarune-connected-c/builder.c",
+  "output": "C:/Programming/deltarune-connected-c/build/CMakeFiles/deltabuilder.dir/builder.c.obj"
+},
+{
+  "directory": "C:/Programming/deltarune-connected-c/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\gcc.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -g -o CMakeFiles\\deltabuilder.dir\\dep\\tinyfiledialogs.c.obj -c C:\\Programming\\deltarune-connected-c\\dep\\tinyfiledialogs.c",
+  "file": "C:/Programming/deltarune-connected-c/dep/tinyfiledialogs.c",
+  "output": "C:/Programming/deltarune-connected-c/build/CMakeFiles/deltabuilder.dir/dep/tinyfiledialogs.c.obj"
+}
+]

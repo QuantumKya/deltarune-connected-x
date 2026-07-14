@@ -1,0 +1,19 @@
+# ninja log v7
+4	601	8056796213719775	CMakeFiles/deltarune_connected.dir/main.c.obj	77d6c0eb53361683
+602	863	8056796219630996	deltarune_connected.exe	d2a2eea78d7f8095
+4	525	8057011099655496	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+475	664	8057000418077598	deltabuilder.exe	64181178342c2c5e
+5	1330	8057013010437217	CMakeFiles/deltabuilder.dir/dep/tinyfiledialogs.c.obj	cf83590b06bcbdc0
+1332	1571	8057013023638115	deltabuilder.exe	a2e0e330007b014d
+4	459	8057013414982457	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+460	667	8057013419546365	deltabuilder.exe	a2e0e330007b014d
+4	462	8057014237859133	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+463	675	8057014242438995	deltabuilder.exe	a2e0e330007b014d
+4	479	8057014666736940	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+480	705	8057014671538348	deltabuilder.exe	a2e0e330007b014d
+4	463	8057015796023772	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+464	677	8057015800636285	deltabuilder.exe	a2e0e330007b014d
+4	472	8057016004169446	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+472	688	8057016008848222	deltabuilder.exe	a2e0e330007b014d
+5	482	8057028246840386	CMakeFiles/deltabuilder.dir/builder.c.obj	4de811de49071f64
+483	697	8057028251663090	deltabuilder.exe	a2e0e330007b014d
