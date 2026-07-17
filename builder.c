@@ -9,10 +9,15 @@ int main(void) {
     InitWindow(1280, 960, "DeltaConnPC Area Builder");
     SetTargetFPS(30);
 
+    FilePaths fp;
+    if (!initLoadMemory(&fp)) return 1;
+
     init();
     bool movingCam = false;
 
     while (!WindowShouldClose()) {
+
+        if (IsKeyPressed(KEY_O)) exportLevelFile(&fp);
 
         // state-changing with the keyboard
         for (int i = 0; i < sizeof(modeKeys) / sizeof(KeyboardKey); i++) {
@@ -28,6 +33,8 @@ int main(void) {
             }
         }
 
+
+
         Vector2 mD = GetMouseDelta();
         Vector2 mP = GetMousePosition();
 
@@ -40,10 +47,14 @@ int main(void) {
         if (currentMode == MAKE_IMAGE) {
             if (IsMouseButtonDown(1)) imageBreakCheck(mP);
 
-            imageMakeCheck(mP);
+            imageMakeCheck(mP, &fp);
         }
 
-        if (currentMode == SELECTION) {
+        if (currentMode == EDIT) {
+            stretchCheck(mP, mD);
+        }
+
+        if (currentMode == SELECT) {
             if (IsMouseButtonPressed(0)) {
                 for (int i = 0; i < selectCount; i++) selectedObjects[i] = NULL;
                 selectCount = 0;
@@ -51,7 +62,7 @@ int main(void) {
             if (IsMouseButtonDown(0)) {
                 for (int i = 0; i < hitboxesFull; i++) {
                     Hitbox hi = hitboxes[i];
-                    if (hoveringEdge(hi, mP, 5)) {
+                    if (hoveringEdgeH(hi, mP, 5)) {
                         addToArrayUnique(selectedObjects, &selectCount, &hi);
                         break;
                     }
@@ -65,12 +76,12 @@ int main(void) {
                 }
             }
         }
-
         
         // camera moving
         if (IsMouseButtonPressed(2)) movingCam = true;
-        if (Vector2LengthSqr(mD) > 0) if (movingCam) camPos = Vector2Subtract(camPos, mD);
+        else if (Vector2LengthSqr(mD) > 0) if (movingCam) camPos = Vector2Subtract(camPos, mD);
         if (IsMouseButtonReleased(2)) movingCam = false;
+        
 
 
         BeginDrawing();
@@ -82,7 +93,7 @@ int main(void) {
                 drawHitbox(hitboxes[i], hitboxColors[hitboxes[i].typ]);
 
             
-            if (currentMode == SELECTION) {
+            if (currentMode == SELECT) {
                 for (int i = 0; i < selectCount; i++) {
                     Hitbox* h = (Hitbox*)(selectedObjects[i]);
                     ImageBox* ib = (ImageBox*)(selectedObjects[i]);
@@ -108,5 +119,6 @@ int main(void) {
     CloseWindow();
 
     clean();
+    cleanLoadMemory(&fp);
     return 0;
 }

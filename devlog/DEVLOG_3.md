@@ -1,4 +1,4 @@
-## Devlog #3 - 7/16/2026
+## Devlog #3 - 7/15/2026
 # Another Frame on the Wall, Pt. 1
 
 In order to make the levels look... like anything, one needs to be able to place images. So I got to work on the `ImageBox` stuff in the code.

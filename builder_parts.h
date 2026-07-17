@@ -20,11 +20,44 @@ typedef struct {
 } Hitbox;
 typedef struct {
     Texture tex;
-    const char* filepath;
+    int fileIndex;
     Rectangle src;
     float x; float y;
     float w; float h;
 } ImageBox;
+
+
+
+// ALL IMAGES MUST HAVE FILE PATHS ACCESSIBLE IN THE PROJECT FOLDER OR SHIT WILL BREAK
+const int MAX_IMAGES = 32;
+typedef struct {
+    char** paths;
+    int pathCount;
+} FilePaths;
+
+bool initLoadMemory(FilePaths* pl) {
+    if (!pl) return false;
+
+    memset(pl, 0, sizeof(*pl));
+    pl->paths = calloc(MAX_IMAGES, sizeof(char*));
+    if (pl->paths == NULL) return false;
+    return true;
+}
+bool cleanLoadMemory(FilePaths* pl) {
+    if (!pl) return false;
+
+    for (int i = 0; i < pl->pathCount; i++) free(pl->paths[i]);
+    free(pl->paths);
+}
+bool addFilePath(FilePaths* pl, const char* newPath) {
+    if (pl->pathCount >= 32) return false;
+
+    pl->paths[pl->pathCount] = strdup(newPath);
+    if (pl->paths[pl->pathCount] == NULL) return false;
+
+    pl->pathCount++;
+    return true;
+}
 
 
 
@@ -96,16 +129,22 @@ bool hoveringRect(const ImageBox imagebox, const Vector2 mousePos) {
     const bool insideRectangle = (mC.x > ib.x && mC.x < ib.x + ib.h && mC.y > ib.y && mC.y < ib.y + ib.h);
     return insideRectangle;
 }
-bool hoveringEdge(const Hitbox hitbox, const Vector2 mousePos, const float t) {
-    const Hitbox h = canonicalHitbox(hitbox);
+bool hoveringEdge(const Rectangle rect, const Vector2 mousePos, const float t) {
+    const Rectangle r = canonicalRect(rect);
     const Vector2 mC = Vector2Add(mousePos, camPos);
 
-    const bool nearLeft   = fabsf(mC.x - h.x) <= t && mC.y >= h.y - t && mC.y <= h.y + h.h + t;
-    const bool nearRight  = fabsf(mC.x - (h.x + h.w)) <= t && mC.y >= h.y - t && mC.y <= h.y + h.h + t;
-    const bool nearTop    = fabsf(mC.y - h.y) <= t && mC.x >= h.x - t && mC.x <= h.x + h.w + t;
-    const bool nearBottom = fabsf(mC.y - (h.y + h.h)) <= t && mC.x >= h.x - t && mC.x <= h.x + h.w + t;
+    const bool nearLeft   = fabsf(mC.x - r.x) <= t && mC.y >= r.y - t && mC.y <= r.y + r.height + t;
+    const bool nearRight  = fabsf(mC.x - (r.x + r.width)) <= t && mC.y >= r.y - t && mC.y <= r.y + r.height + t;
+    const bool nearTop    = fabsf(mC.y - r.y) <= t && mC.x >= r.x - t && mC.x <= r.x + r.width + t;
+    const bool nearBottom = fabsf(mC.y - (r.y + r.height)) <= t && mC.x >= r.x - t && mC.x <= r.x + r.width + t;
 
     return nearLeft || nearRight || nearTop || nearBottom;
+}
+bool hoveringEdgeH(const Hitbox h, const Vector2 mousePos, const float t) {
+    return hoveringEdge(hitboxRect(h), mousePos, t);
+}
+bool hoveringEdgeIB(const ImageBox ib, const Vector2 mousePos, const float t) {
+    return hoveringEdge(imageBoxRect(ib), mousePos, t);
 }
 
 
@@ -117,7 +156,9 @@ void deleteFromArray(const void* arr, int* counter, const size_t elem_size, cons
     *counter -= howmany;
 }
 
-void addToArrayUnique(void** arr, int* counter, void* elem) {
-    for (int i = 0; i < *counter; i++) if (arr[i] == elem) return;
-    arr[(*counter)++] = elem;
+int addToArrayUnique(void** arr, int* counter, void* elem) {
+    for (int i = 0; i < *counter; i++) if (arr[i] == elem) return i;
+    
+    if (*counter >= sizeof(arr)/sizeof(elem)) return -1;
+    arr[*counter] = elem; return (*counter)++;
 }
