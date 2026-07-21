@@ -3,32 +3,53 @@
 #include <raylib.h>
 
 #include "building.h"
+#include "file_business.h"
 
 
 int main(void) {
     InitWindow(1280, 960, "DeltaConnPC Area Builder");
     SetTargetFPS(30);
 
-    FilePaths fp;
+    StringList fp;
     if (!initLoadMemory(&fp)) return 1;
+
+    Font daFont = LoadFont("dep/determination-8-bit-oper-jve-mono.otf");
 
     init();
     bool movingCam = false;
 
     while (!WindowShouldClose()) {
 
-        if (IsKeyPressed(KEY_O)) exportLevelFile(&fp);
+        if (IsKeyPressed(KEY_O)) exportLevelFile(&fp, hitboxes, hitboxesFull, imageboxes, imageboxesFull);
+        if (IsKeyPressed(KEY_L)) {
+            const char* fs[1] = { "*.txt" };
+            const char* fn = tinyfd_openFileDialog(
+                "Open Level File", "",
+                1, fs,
+                "Text Files (.txt)",
+                0
+            );
+            if (fn != NULL) readLevelFile(fn, hitboxes, &hitboxesFull, imageboxes, &imageboxesFull, &fp);
+        }
 
         // state-changing with the keyboard
-        for (int i = 0; i < sizeof(modeKeys) / sizeof(KeyboardKey); i++) {
-            if (IsKeyPressed(modeKeys[i])) {
-                currentMode = (enum EditingMode)i;
+        for (int i = 0; i < sizeof(toolModeKeys) / sizeof(KeyboardKey); i++) {
+            if (IsKeyPressed(toolModeKeys[i])) {
+                currentTool = (enum ToolMode)i;
                 break;
             }
         }
-        for (int i = 0; i < sizeof(hitboxTypeKeys) / sizeof(KeyboardKey); i++) {
-            if (IsKeyPressed(hitboxTypeKeys[i])) {
-                tempBox.typ = (enum HitboxType)i;
+        for (int i = 0; i < sizeof(subTypeKeys) / sizeof(KeyboardKey); i++) {
+            if (IsKeyPressed(subTypeKeys[i])) {
+                switch (currentTool) {
+                    case EDIT:
+                        currentEditMode = (enum EditingMode)i; break;
+                    case MAKE_BOX:
+                        tempBox.typ = (enum HitboxType)i; break;
+                    case MAKE_IMAGE:
+                        break;
+                    default: break;
+                }
                 break;
             }
         }
@@ -38,27 +59,33 @@ int main(void) {
         Vector2 mD = GetMouseDelta();
         Vector2 mP = GetMousePosition();
 
-        if (currentMode == MAKE_BOX) {
+
+        // box making
+        if (currentTool == MAKE_BOX) {
             if (IsMouseButtonDown(1)) hitboxBreakCheck(mP);
             
-            hitboxMakeCheck(mP, mD);
+            hitboxMakeCheck(mP, mD, fp);
         }
 
-        if (currentMode == MAKE_IMAGE) {
+        if (currentTool == MAKE_IMAGE) {
             if (IsMouseButtonDown(1)) imageBreakCheck(mP);
 
             imageMakeCheck(mP, &fp);
         }
 
-        if (currentMode == EDIT) {
+
+
+        // all the editing
+        if (currentTool == EDIT && currentEditMode == STRETCH) {
             stretchCheck(mP, mD);
         }
 
-        if (currentMode == SELECT) {
-            if (IsMouseButtonPressed(0)) {
-                for (int i = 0; i < selectCount; i++) selectedObjects[i] = NULL;
-                selectCount = 0;
-            }
+        if (currentTool == EDIT && currentEditMode == DRAG) {
+            dragCheck(mP, mD);
+        }
+
+        if (currentTool == EDIT && currentEditMode == SELECT) {
+            if (IsMouseButtonPressed(0)) emptyArrayUnique(selectedObjects, &selectCount);
             if (IsMouseButtonDown(0)) {
                 for (int i = 0; i < hitboxesFull; i++) {
                     Hitbox hi = hitboxes[i];
@@ -90,29 +117,33 @@ int main(void) {
             for (int i = 0; i < imageboxesFull; i++)
                 drawImageBox(imageboxes[i], WHITE);
             for (int i = 0; i < hitboxesFull; i++)
-                drawHitbox(hitboxes[i], hitboxColors[hitboxes[i].typ]);
+                drawHitbox(hitboxes[i], hitboxColors[hitboxes[i].typ], &fp, &daFont);
 
             
-            if (currentMode == SELECT) {
+            if (currentTool == EDIT) {
                 for (int i = 0; i < selectCount; i++) {
                     Hitbox* h = (Hitbox*)(selectedObjects[i]);
                     ImageBox* ib = (ImageBox*)(selectedObjects[i]);
-                    if (h != NULL) drawHitbox(*h, *selectionOverColor);
+                    if (h != NULL) drawHitbox(*h, *selectionOverColor, &fp, &daFont);
                     if (ib != NULL) drawImageBox(*ib, *selectionOverColor);
                 }
-
-                DrawText("SELECTION MODE", 10, 10, 30, WHITE);
             }
                 
-            if (currentMode == MAKE_BOX) {
-                drawHitbox(tempBox, hitboxColors[tempBox.typ]);
+            if (currentTool == MAKE_BOX)
+                drawHitbox(tempBox, hitboxColors[tempBox.typ], &fp, &daFont);
 
-                DrawText("HITBOX MODE", 10, 10, 30, WHITE);
-            }
 
-            if (currentMode == MAKE_IMAGE) {
-                DrawText("IMAGEBOX MODE", 10, 10, 30, WHITE);
+
+            DrawText(TextFormat("TOOL: %s", toolModeNames[currentTool]), 10, 10, 30, WHITE);
+
+            int currentSubMode = 0;
+            switch (currentTool) {
+                case EDIT: currentSubMode = currentEditMode; break;
+                case MAKE_BOX: currentSubMode = tempBox.typ; break;
+                case MAKE_IMAGE: currentSubMode = 0; break;
+                default: currentSubMode = 0; break;
             }
+            DrawText(TextFormat("MODE: %s", subModeNames[currentTool][currentSubMode]), 10, 40, 30, WHITE);
             
         EndDrawing();
     }
